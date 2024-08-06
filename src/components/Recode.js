@@ -14,9 +14,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const IconHeart = styled(IoHeart)`
-  color: black;
   font-size: 30px;
   margin: 0 2px;
+  color: ${(props) => (props.filled ? 'black' : 'grey')};
 `;
 const IconClose = styled(IoIosClose)`
   color: black;
@@ -187,6 +187,11 @@ export default function Recode() {
       console.error('문서 추가 중 오류 발생: ', e);
     }
   };
+
+  const handleRatingChange = (rating) => {
+    setFormData({ ...formData, rating });
+  };
+
   return (
     <Main>
       <GlobalStyle />
@@ -237,7 +242,11 @@ export default function Recode() {
           <RatingWrap>
             <p style={{fontSize: '17px', marginBottom: '10px'}}>평점</p>
             {[...Array(5)].map((_, index) => (
-              <IconHeart key={index} onClick={() => setFormData({ ...formData, rating: index + 1 })} />
+              <IconHeart
+              key={index}
+              filled={index < formData.rating ? 1 : 0}
+              onClick={() => handleRatingChange(index + 1)}
+            />
             ))}
           </RatingWrap>
         </WriteWrap>

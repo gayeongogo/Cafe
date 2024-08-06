@@ -197,7 +197,11 @@ export default function Home() {
                 {cafe.imageUrl && <Img src={cafe.imageUrl} alt="Cafe" />}
                 <ImgText>
                   <Name>{cafe.cafeName}</Name>
-                  <Rating><IconHeart/><IconHeart/><IconHeart/></Rating>
+                  <Rating>
+                    {[...Array(cafe.rating)].map((_, i) => (
+                      <IconHeart key={i} />
+                    ))}
+                  </Rating>
                 </ImgText>
               </CardMain>
               <CardText>

@@ -92,7 +92,11 @@ const Modal = ({ cafe, onClose }) => {
           <ModalMain>
             <ModalTitle><IconMap/>{cafe.cafeName}</ModalTitle>
             <ModalLocation>{cafe.location}</ModalLocation>
-            <ModalRating><ModalIconHeart/>{cafe.rating}</ModalRating>
+            <ModalRating>
+              {[...Array(cafe.rating)].map((_, i) => (
+                <ModalIconHeart key={i} />
+              ))}
+            </ModalRating>
             <ModalText>{cafe.text}</ModalText>
             <p>맛: {cafe.taste}</p>
             <p>분위기: {cafe.vibes}</p>
