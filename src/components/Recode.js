@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import GlobalStyle from './GlobalStyle';
@@ -6,6 +6,12 @@ import { IoHeart } from "react-icons/io5";
 import { FaChevronRight } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
 import { HiPencil } from "react-icons/hi2";
+import { db } from '../firebase';
+import { collection, addDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const IconHeart = styled(IoHeart)`
   color: black;
@@ -132,6 +138,55 @@ const Footer = styled.div`
 
 
 export default function Recode() {
+  const [formData, setFormData] = useState({
+    cafeName: '',
+    text: '',
+    location: '',
+    taste: '',
+    vibes: '',
+    specialMenu: '',
+    rating: 0,
+    imageUrl: '',
+  });
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [imageFile, setImageFile] = useState(null);
+  const storage = getStorage();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFormData({ ...formData, imageUrl: reader.result });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      let imageUrl = '';
+      if (imageFile) {
+        const storageRef = ref(storage, `images/${imageFile.name}`);
+        await uploadBytes(storageRef, imageFile);
+        imageUrl = await getDownloadURL(storageRef);
+      }
+      await addDoc(collection(db, 'cafes'), {
+        ...formData,
+        imageUrl,
+        date: new Date().toISOString(),
+      });
+      alert('데이터가 성공적으로 저장되었습니다!');
+    } catch (e) {
+      console.error('문서 추가 중 오류 발생: ', e);
+    }
+  };
   return (
     <Main>
       <GlobalStyle />
@@ -139,44 +194,51 @@ export default function Recode() {
         <Header>
           <Link to='/'><IconClose/></Link>
           <DateArea>
-            <p>2024년 6월 20일</p>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              dateFormat="yyyy년 MM월 dd일"
+            />
             <button><IconPencil/></button>
           </DateArea>
-          <button>완료</button>
+          <button onClick={handleSubmit}>완료</button>
         </Header>
         <WriteWrap>
           <ImgWrap>
-            <Img src={`${process.env.PUBLIC_URL}/images/pudding.jpg`} alt="" />
+          <input type="file" onChange={handleImageChange} />
+          {formData.imageUrl && <Img src={formData.imageUrl} alt="Preview" />}
           </ImgWrap>
           <div style={{padding: '16px'}}>
-            <TextArea type="text" placeholder='글을 입력하세요.'/>
+            <TextArea type="text" placeholder='글을 입력하세요.'  name="text" onChange={handleChange}/>
           </div>
           <List>
             <ListItem>
               <Label htmlFor="name">카페 이름</Label>
-              <Input type="text" placeholder='카페 이름을 입력하세요.'/>
+              <Input type="text" placeholder='카페 이름을 입력하세요.' name="cafeName" onChange={handleChange}/>
             </ListItem>
             <ListItem>
               <Label htmlFor="location">위치 추가</Label>
-              <Input type="text" placeholder='위치 찾기...'/>
+              <Input type="text" placeholder='위치 찾기...' name="location" onChange={handleChange}/>
               <IconRight/>
             </ListItem>
             <ListItem>
               <Label htmlFor="taste">맛</Label>
-              <Input type="text" placeholder='커피와 디저트의 맛은 어땠나요?'/>
+              <Input type="text" placeholder='커피와 디저트의 맛은 어땠나요?' name="taste" onChange={handleChange}/>
             </ListItem>
             <ListItem>
               <Label htmlFor="vibes">분위기</Label>
-              <Input type="text" placeholder='어떤 감성의 카페였나요?'/>
+              <Input type="text" placeholder='어떤 감성의 카페였나요?' name="vibes" onChange={handleChange}/>
             </ListItem>
             <ListItem>
-              <Label htmlFor="vibes">특별한 메뉴</Label>
-              <Input type="text" placeholder='이 곳의 시그니처 메뉴는요...'/>
+              <Label htmlFor="specialMenu">특별한 메뉴</Label>
+              <Input type="text" placeholder='이 곳의 시그니처 메뉴는요...' name="specialMenu" onChange={handleChange}/>
             </ListItem>
           </List>
           <RatingWrap>
             <p style={{fontSize: '17px', marginBottom: '10px'}}>평점</p>
-            <IconHeart /><IconHeart /><IconHeart /><IconHeart /><IconHeart />
+            {[...Array(5)].map((_, index) => (
+              <IconHeart key={index} onClick={() => setFormData({ ...formData, rating: index + 1 })} />
+            ))}
           </RatingWrap>
         </WriteWrap>
         <Footer>@gayeongogo</Footer>
