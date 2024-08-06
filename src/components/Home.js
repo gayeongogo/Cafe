@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import GlobalStyle from './GlobalStyle';
@@ -6,6 +6,8 @@ import { IoHeart } from "react-icons/io5";
 import { RxDotsHorizontal } from "react-icons/rx";
 import { GoPlus } from "react-icons/go";
 import { MdLocationOn } from "react-icons/md";
+import { db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 const IconHeart = styled(IoHeart)`
   color: white;
@@ -136,7 +138,7 @@ const CardFooter = styled.div`
   justify-content: space-between;
   border-top: 1px solid #EAEAEA;
 `;
-const Date = styled.p`
+const DateArea = styled.p`
   font-size: 13px;
   color: #7A7A7A;
   font-weight: 500;
@@ -234,6 +236,19 @@ const ModalText = styled.div`
 `
 
 export default function Home() {
+  const [cafes, setCafes] = useState([]);
+
+  useEffect(() => {
+    const fetchCafes = async () => {
+      const cafesCollection = collection(db, 'cafes');
+      const cafesSnapshot = await getDocs(cafesCollection);
+      let cafesList = cafesSnapshot.docs.map(doc => doc.data());
+      cafesList = cafesList.sort((a, b) => new Date(b.date) - new Date(a.date)); // 날짜 기준 내림차순
+      setCafes(cafesList);
+    };
+
+    fetchCafes();
+  }, []);
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -245,23 +260,25 @@ export default function Home() {
           <Title>컵일기</Title>
         </Header>
         <CardWrap>
-          <Card onClick={() => setModalOpen(true)}>
-            <CardMain>
-              <Img src={`${process.env.PUBLIC_URL}/images/pudding.jpg`} alt="" />
-              <ImgText>
-                <Name>카페 이도</Name>
-                <Rating><IconHeart/><IconHeart/><IconHeart/></Rating>
-              </ImgText>
-            </CardMain>
-            <CardText>
-              <Text>가끔은 귀엽기만 한 디저트도 먹고싶어<br/><br/>
-                어떤 사람들은 고작 글씨로 채워져 있는 종이 뭉치에 푹 빠져서 인생의 소중한 시간을 소비하고, 어떤 사람들은 유치한 영화를 보면서 열광하고 심지어 장난감까지 수집합니다.<br/><br/>잔디밭에서 22명이 작은 공 하나를 차려고 발버둥 치는 행위에 수십억 명이 열광하고, 매일 저녁 TV 앞에 모여 앉아 눈물을 훔치기도 하죠.</Text>
-            </CardText>
-            <CardFooter>
-              <Date>6월 20일 목요일</Date>
-              <MoreBtn><IconMore/></MoreBtn>
-            </CardFooter>
-          </Card>
+          {cafes.map((cafe, index) => (
+            <Card onClick={() => setModalOpen(true)} key={index}>
+              <CardMain>
+                {cafe.imageUrl && <Img src={cafe.imageUrl} alt="Cafe" />}
+                <ImgText>
+                  <Name>{cafe.cafeName}</Name>
+                  <Rating><IconHeart/><IconHeart/><IconHeart/></Rating>
+                </ImgText>
+              </CardMain>
+              <CardText>
+                <Text>{cafe.text}</Text>
+              </CardText>
+              <CardFooter>
+                <DateArea>{new Date(cafe.date).toLocaleDateString()}</DateArea>
+                <MoreBtn><IconMore/></MoreBtn>
+              </CardFooter>
+            </Card>
+          ))}
+          
           
         </CardWrap>
         <Link to='/recode'><CreateBtn><IconPlus/></CreateBtn></Link>
