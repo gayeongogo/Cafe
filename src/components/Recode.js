@@ -147,9 +147,9 @@ export default function Recode() {
     specialMenu: '',
     rating: 0,
     imageUrl: '',
+    date: new Date(),
   });
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [imageFile, setImageFile] = useState(null);
   const storage = getStorage();
 
@@ -169,6 +169,10 @@ export default function Recode() {
     }
   };
 
+  const handleDateChange = (date) => {
+    setFormData({ ...formData, date });
+  };
+
   const handleSubmit = async () => {
     try {
       let imageUrl = '';
@@ -180,7 +184,7 @@ export default function Recode() {
       await addDoc(collection(db, 'cafes'), {
         ...formData,
         imageUrl,
-        date: new Date().toISOString(),
+        date: formData.date.toISOString(),
       });
       alert('데이터가 성공적으로 저장되었습니다!');
     } catch (e) {
@@ -200,8 +204,8 @@ export default function Recode() {
           <Link to='/'><IconClose/></Link>
           <DateArea>
             <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
+              selected={new Date(formData.date)}
+              onChange={handleDateChange}
               dateFormat="yyyy년 MM월 dd일"
             />
             <button><IconPencil/></button>
