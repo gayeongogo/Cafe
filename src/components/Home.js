@@ -229,12 +229,11 @@ export default function Home() {
                 <MoreBtn><IconMore/></MoreBtn>
               </CardFooter>
               <div>
+                <Button as={Link} to={`/edit/${cafe.id}`}>수정</Button>
                 <Button onClick={(e) => handleDelete(cafe.id, e)}>삭제</Button>
               </div>
             </Card>
           ))}
-          
-          
         </CardWrap>
         <Link to='/recode'><CreateBtn><IconPlus/></CreateBtn></Link>
         <Footer>@gayeongogo</Footer>
