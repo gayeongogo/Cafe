@@ -6,7 +6,7 @@ import { IoHeart } from "react-icons/io5";
 import { RxDotsHorizontal } from "react-icons/rx";
 import { GoPlus } from "react-icons/go";
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import Modal from './Modal';
 
 const IconHeart = styled(IoHeart)`
@@ -159,6 +159,9 @@ const Footer = styled.div`
   padding: 16px;
 `
 
+const Button = styled.button`
+`
+
 export default function Home() {
   const [cafes, setCafes] = useState([]);
   const [selectedCafe, setSelectedCafe] = useState(null);
@@ -175,13 +178,27 @@ export default function Home() {
     const fetchCafes = async () => {
       const cafesCollection = collection(db, 'cafes');
       const cafesSnapshot = await getDocs(cafesCollection);
-      let cafesList = cafesSnapshot.docs.map(doc => doc.data());
+      let cafesList = cafesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       cafesList = cafesList.sort((a, b) => new Date(b.date) - new Date(a.date)); // 날짜 기준 내림차순
       setCafes(cafesList);
     };
 
     fetchCafes();
   }, []);
+
+  const handleDelete = async (id, e) => {
+    e.stopPropagation(); // 이벤트 전파 방지(모달 열림 막기)
+    const confirmed = window.confirm("정말 삭제하시겠습니까?");
+    if (confirmed) {
+      try {
+        await deleteDoc(doc(db, 'cafes', id));
+        setCafes(prevCafes => prevCafes.filter(cafe => cafe.id !== id));
+        alert('삭제가 완료되었습니다.');
+      } catch (e) {
+        console.error('삭제 중 오류 발생: ', e);
+      }
+    }
+  };
 
   return (
     <Main>
@@ -211,6 +228,9 @@ export default function Home() {
                 <DateArea>{new Date(cafe.date).toLocaleDateString()}</DateArea>
                 <MoreBtn><IconMore/></MoreBtn>
               </CardFooter>
+              <div>
+                <Button onClick={(e) => handleDelete(cafe.id, e)}>삭제</Button>
+              </div>
             </Card>
           ))}
           
