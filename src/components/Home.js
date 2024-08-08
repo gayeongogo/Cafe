@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import GlobalStyle from './GlobalStyle';
 import { IoHeart } from "react-icons/io5";
-import { RxDotsHorizontal } from "react-icons/rx";
 import { GoPlus } from "react-icons/go";
 import { db } from '../firebase';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
@@ -13,12 +12,6 @@ const IconHeart = styled(IoHeart)`
   color: white;
   font-size: 22px;
   margin: 0 1px;
-`;
-const IconMore = styled(RxDotsHorizontal)`
-  color: #7A7A7A;
-  font-size: 24px;
-  margin: 0 4px;
-  vertical-align: middle;
 `;
 const IconPlus = styled(GoPlus)`
   color: white;
@@ -131,8 +124,7 @@ const DateArea = styled.p`
   font-size: 13px;
   color: #7A7A7A;
   font-weight: 500;
-`;
-const MoreBtn = styled.button`
+  padding-top: 3px;
 `;
 const CreateBtn = styled.button`
   width: 60px;
@@ -157,9 +149,6 @@ const Footer = styled.div`
   color: #dedede;
   text-align: right;
   padding: 16px;
-`
-
-const Button = styled.button`
 `
 
 export default function Home() {
@@ -194,6 +183,7 @@ export default function Home() {
         await deleteDoc(doc(db, 'cafes', id));
         setCafes(prevCafes => prevCafes.filter(cafe => cafe.id !== id));
         alert('삭제가 완료되었습니다.');
+        setSelectedCafe(null);
       } catch (e) {
         console.error('삭제 중 오류 발생: ', e);
       }
@@ -226,19 +216,14 @@ export default function Home() {
               </CardText>
               <CardFooter>
                 <DateArea>{new Date(cafe.date).toLocaleDateString()}</DateArea>
-                <MoreBtn><IconMore/></MoreBtn>
               </CardFooter>
-              <div>
-                <Button as={Link} to={`/edit/${cafe.id}`}>수정</Button>
-                <Button onClick={(e) => handleDelete(cafe.id, e)}>삭제</Button>
-              </div>
             </Card>
           ))}
         </CardWrap>
         <Link to='/recode'><CreateBtn><IconPlus/></CreateBtn></Link>
         <Footer>@gayeongogo</Footer>
       </Container>
-      {selectedCafe && <Modal cafe={selectedCafe} onClose={handleCloseModal} />} 
+      {selectedCafe && <Modal cafe={selectedCafe} onClose={handleCloseModal} onDelete={handleDelete} />} 
     </Main>
   )
 }

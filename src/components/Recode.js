@@ -147,7 +147,7 @@ export default function Recode() {
     specialMenu: '',
     rating: 0,
     imageUrl: '',
-    date: new Date(),
+    date: new Date().toISOString(),
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -170,7 +170,7 @@ export default function Recode() {
   };
 
   const handleDateChange = (date) => {
-    setFormData({ ...formData, date });
+    setFormData({ ...formData, date: date.toISOString() });
   };
 
   const handleSubmit = async () => {
@@ -181,10 +181,11 @@ export default function Recode() {
         await uploadBytes(storageRef, imageFile);
         imageUrl = await getDownloadURL(storageRef);
       }
+      const dateISO = new Date(formData.date).toISOString();
       await addDoc(collection(db, 'cafes'), {
         ...formData,
         imageUrl,
-        date: formData.date.toISOString(),
+        date: dateISO,
       });
       alert('데이터가 성공적으로 저장되었습니다!');
     } catch (e) {

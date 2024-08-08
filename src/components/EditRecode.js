@@ -148,7 +148,7 @@ export default function EditRecode() {
     specialMenu: '',
     rating: 0,
     imageUrl: '',
-    date: new Date(),
+    date: new Date().toISOString(),
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -186,7 +186,7 @@ export default function EditRecode() {
   };
 
   const handleDateChange = (date) => {
-    setFormData({ ...formData, date });
+    setFormData({ ...formData, date: date.toISOString() });
   };
 
   const handleSubmit = async () => {
@@ -197,10 +197,11 @@ export default function EditRecode() {
         await uploadBytes(storageRef, imageFile);
         imageUrl = await getDownloadURL(storageRef);
       }
+      const dateISO = new Date(formData.date).toISOString();
       await updateDoc(doc(db, 'cafes', id), {
         ...formData,
         imageUrl,
-        date: formData.date.toISOString(),
+        date: dateISO,
       });
       alert('데이터가 성공적으로 업데이트되었습니다!');
       navigate('/');
