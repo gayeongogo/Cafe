@@ -1,20 +1,29 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { IoHeart } from "react-icons/io5";
 import { MdLocationOn } from "react-icons/md";
 import { RxDotsHorizontal } from "react-icons/rx";
 
+const modalIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8); // 작게 시작
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1); // 원래 크기로
+  }
+`;
+
 
 const ModalIconHeart = styled(IoHeart)`
-  color: #000000;
   font-size: 17px;
+  color: ${(props) => (props.filled ? '#212121' : '#C3C3C3')};
 `;
 const IconMap = styled(MdLocationOn)`
-  color: #000000;
-  font-size: 19px;
+  font-size: 17px;
   vertical-align: middle;
-  margin-right: 4px;
   margin-bottom: 3px;
 `;
 const IconMore = styled(RxDotsHorizontal)`
@@ -39,7 +48,7 @@ const Button = styled.button`
 
 const Overlay = styled.div`
   position: fixed;
-  max-width: 500px;
+  max-width: 450px;
   width: 100%;
   height: 100%;
   margin: 0 auto;
@@ -52,13 +61,15 @@ const Overlay = styled.div`
   backdrop-filter: blur(2px);
 `
 const Contents = styled.div`
+  animation: ${modalIn} 0.2s ease-out;
   max-width: 400px;
   width: 90%;
-  height: 90%;
-  position: absolute; 
+  max-height: 90%;
+  height: auto;
+  position: fixed; 
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1);
   background-color: #ffffff;
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
@@ -72,7 +83,7 @@ const Contents = styled.div`
 `
 const ModalBg = styled.div`
   position: fixed;
-  max-width: 500px;
+  max-width: 450px;
   width: 100%;
   height: 100%;
   margin: 0 auto;
@@ -100,9 +111,11 @@ const ModalHeader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
   padding: 7px 0;
-  font-size: 14px;
+  z-index: 3000;
 `
 const ModalDate = styled.div`
   margin: 0 auto;
@@ -120,20 +133,22 @@ const ModalMain = styled.div`
   padding: 0 16px 20px 16px;
 `
 const ModalTitle = styled.div`
+  font-size: 1.5rem;
   margin-top: 7px;
-
 `
 const ModalLocation = styled.div`
   font-size: 14.5px;
   color: #707070;
-  margin-bottom: 5px;
 `
 const ModalRating = styled.div`
   margin-bottom: 7px;
 `
 const ModalText = styled.div`
+  line-height: 120%;
+  white-space: pre-wrap; 
+  word-wrap: break-word;
   padding-bottom: 20px;
-  font-size: 15px;
+  font-size: 17px;
 `
 
 const Modal = ({ cafe, onClose, onDelete }) => {
@@ -151,17 +166,19 @@ const Modal = ({ cafe, onClose, onDelete }) => {
           </ModalHeader>
           {cafe.imageUrl && <ModalImg src={cafe.imageUrl} alt="Cafe image" />}
           <ModalMain>
-            <ModalTitle><IconMap/>{cafe.cafeName}</ModalTitle>
-            <ModalLocation>{cafe.location}</ModalLocation>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+              <ModalTitle>{cafe.cafeName}</ModalTitle>
+              <ModalLocation><IconMap/>{cafe.location}</ModalLocation>
+            </div>
             <ModalRating>
-              {[...Array(cafe.rating)].map((_, i) => (
-                <ModalIconHeart key={i} />
+              {[...Array(5)].map((_, i) => (
+                <ModalIconHeart key={i} filled={i < cafe.rating ? 1 : 0} />
               ))}
             </ModalRating>
             <ModalText>{cafe.text}</ModalText>
-            <p>맛: {cafe.taste}</p>
-            <p>분위기: {cafe.vibes}</p>
-            <p>특별한 메뉴: {cafe.specialMenu}</p>
+            <p>맛 - {cafe.taste}</p>
+            <p>분위기 - {cafe.vibes}</p>
+            <p>특별한 메뉴 - {cafe.specialMenu}</p>
           </ModalMain>
         </Contents>
       </Overlay>

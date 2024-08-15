@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import GlobalStyle from './GlobalStyle';
 import Home from "./Home";
 import Recode from "./Recode";
 import EditRecode from "./EditRecode";
@@ -6,6 +7,7 @@ import EditRecode from "./EditRecode";
 export default function App() {
   return (
     <div>
+      <GlobalStyle/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/recode" element={<Recode />} />

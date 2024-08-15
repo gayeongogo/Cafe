@@ -1,41 +1,53 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { useState, useEffect, forwardRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import styled, { keyframes } from 'styled-components';
 import GlobalStyle from './GlobalStyle';
 import { IoHeart } from "react-icons/io5";
 import { FaChevronRight } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
-import { HiPencil } from "react-icons/hi2";
+import { MdCalendarMonth } from "react-icons/md";
+import { BsFileEarmarkPlusFill } from "react-icons/bs"
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 
 const IconHeart = styled(IoHeart)`
   font-size: 30px;
   margin: 0 2px;
-  color: ${(props) => (props.filled ? 'black' : 'grey')};
+  color: ${(props) => (props.filled ? '#212121' : '#C3C3C3')};
+  cursor: pointer;
 `;
 const IconClose = styled(IoIosClose)`
-  color: black;
+  color: #212121;
   font-size: 29px;
   vertical-align: middle;
 `;
-const IconPencil = styled(HiPencil)`
-  color: black;
-  font-size: 24px;
+const IconCalendar = styled(MdCalendarMonth)`
+  font-size: 23px;
   padding-left: 5px;
   vertical-align: middle;
 `;
 const IconRight = styled(FaChevronRight)`
-  color: black;
   font-size: 13px;
   vertical-align: middle;
 `;
+const IconPicture = styled(BsFileEarmarkPlusFill)`
+  color: #C3C3C3;
+  font-size: 40px;
+  vertical-align: middle;
+`;
 const Main = styled.div`
-  font-family: Arial, sans-serif;
   margin: 0 auto;
   padding: 0;
   display: flex;
@@ -51,9 +63,9 @@ const Container = styled.div`
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  
 `;
 const Header = styled.div`
+  animation: ${fadeIn} 0.5s ease-in-out;
   max-width: 500px;
   width: 100%;
   height: 52px;
@@ -73,6 +85,7 @@ const DateArea = styled.div`
   padding-left: 24px;
 `;
 const WriteWrap = styled.div`
+  animation: ${fadeIn} 0.5s ease-in-out;
   padding-top: 52px;
 `;
 const ImgWrap = styled.div`
@@ -80,12 +93,12 @@ const ImgWrap = styled.div`
   height: 301px;
   overflow:hidden;
   margin: 17px auto;
-  border-radius: 15px;
 `;
 const Img = styled.img`
   width: 100%;
   height: 100%;
   object-fit:cover;
+  border-radius: 15px;
 `;
 const TextArea = styled.textarea`
   width: 100%;
@@ -129,15 +142,42 @@ const RatingWrap = styled.div`
   text-align: center;
   padding: 30px 0;
 `
+const Submit = styled.button`
+  color: ${(props) => (props.disabled ? '#C3C3C3' : '#212121')};
+  cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
+`
 const Footer = styled.div`
   font-size: 12px;
   color: #dedede;
   text-align: right;
   padding: 16px;
 `
+const FileLabel = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: inherit;
+  border: 1px solid #C3C3C3;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 15px;
+`;
+const FileText = styled.p`
+  margin-bottom: 7px;
+  color: #C3C3C3;
+  font-family: sans-serif;
+`;
+const FileInput = styled.input`
+  display: none;
+`;
+const DateButton = styled.button`
+`
 
 
 export default function Recode() {
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     cafeName: '',
     text: '',
@@ -152,6 +192,13 @@ export default function Recode() {
 
   const [imageFile, setImageFile] = useState(null);
   const storage = getStorage();
+  const [isFormValid, setIsFormValid] = useState(false); // 양식 검사
+
+  useEffect(() => {
+    const { cafeName, text, location, taste, vibes, specialMenu, rating, imageUrl, date } = formData;
+    const isValid = cafeName && text && location && taste && vibes && specialMenu && rating > 0 && imageUrl && date;
+    setIsFormValid(isValid);
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -174,6 +221,8 @@ export default function Recode() {
   };
 
   const handleSubmit = async () => {
+    if (!isFormValid) return;
+
     try {
       let imageUrl = '';
       if (imageFile) {
@@ -187,7 +236,8 @@ export default function Recode() {
         imageUrl,
         date: dateISO,
       });
-      alert('데이터가 성공적으로 저장되었습니다!');
+      alert('저장되었어요✔');
+      navigate('/');
     } catch (e) {
       console.error('문서 추가 중 오류 발생: ', e);
     }
@@ -196,6 +246,17 @@ export default function Recode() {
   const handleRatingChange = (rating) => {
     setFormData({ ...formData, rating });
   };
+
+  const CustomDatePicker = forwardRef(({ value, onClick }, ref) => {
+    return (
+    <DateButton onClick={onClick} ref={ref}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        {value || '날짜를 선택하세요'}
+        <IconCalendar/>
+      </div>
+    </DateButton>
+    );
+  });
 
   return (
     <Main>
@@ -208,15 +269,22 @@ export default function Recode() {
               selected={new Date(formData.date)}
               onChange={handleDateChange}
               dateFormat="yyyy년 MM월 dd일"
+              customInput={<CustomDatePicker />}
             />
-            <button><IconPencil/></button>
           </DateArea>
-          <button onClick={handleSubmit}>완료</button>
+          <Submit onClick={handleSubmit} disabled={!isFormValid}>완료</Submit>
         </Header>
         <WriteWrap>
-          <ImgWrap>
-          <input type="file" onChange={handleImageChange} />
-          {formData.imageUrl && <Img src={formData.imageUrl} alt="Preview" />}
+          <ImgWrap onClick={() => document.getElementById('fileInput').click()}>
+            {formData.imageUrl ? (
+              <Img src={formData.imageUrl} alt="Preview" /> 
+            ) : (
+              <FileLabel>
+                <FileText>사진 추가하기</FileText>
+                <IconPicture />
+              </FileLabel>
+            )}
+            <FileInput id="fileInput" type="file" onChange={handleImageChange} />
           </ImgWrap>
           <div style={{padding: '16px'}}>
             <TextArea type="text" placeholder='글을 입력하세요.'  name="text" onChange={handleChange}/>

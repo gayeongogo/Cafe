@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import GlobalStyle from './GlobalStyle';
 import { IoHeart } from "react-icons/io5";
 import { GoPlus } from "react-icons/go";
@@ -8,8 +8,20 @@ import { db } from '../firebase';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import Modal from './Modal';
 
+// 요소가 천천히 나타나는 애니메이션 정의
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 const IconHeart = styled(IoHeart)`
-  color: white;
+  color: ${(props) => (props.filled ? 'white' : 'rgba(255,255,255,0.3)')};
   font-size: 22px;
   margin: 0 1px;
 `;
@@ -26,36 +38,49 @@ const Main = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-color: white;
+  background-color: #f0f0f0;
+  color: #212121;
 `;
 const Container = styled.div`
-  max-width: 500px;
+  max-width: 450px;
   width: 100%;
   min-height: 100vh;
   height: 100%;
-  background-color: #EFEFEE;
+  background-color: rgba(255, 255, 255, 0.7);
+  background-image: url('/images/monun-bg.jpg');
+  background-attachment: fixed;
+  background-size: contain;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 `;
 const Header = styled.div`
-  max-width: 500px;
+  max-width: 450px;
   width: 100%;
-  height: 52px;
+  height: ${(props) => (props.shrunk ? "30px" : "52px")};
+  background-image: ${(props) => (props.shrunk ? "none" : "url('/images/title-color.png')")};
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center 7px;
+  background-color: ${(props) => (props.shrunk ? "rgba(255,255,255,0.7)" : "none")};
+  backdrop-filter: ${(props) => (props.shrunk ? "blur(10px)" : "none")};
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 0 16px;
   position: fixed;
   z-index: 1000;
-  //background-color: rgba(255,255,255,0.7);
+  transition: height 0.5s ease;
 `;
 const Title = styled.p`
-  font-size: 23px;
+  font-size: ${(props) => (props.shrunk ? "1.2rem" : "2rem")};
   font-weight: 600;
+  color: #323031;
+  transition: height 0.5s ease;
 `;
 const CardWrap = styled.div`
-  padding: 70px 16px 0 16px;
+  animation: ${fadeIn} 1s ease-out;
+  padding: 70px 20px 0 20px;
 `;
 const Card = styled.div`
   padding: 12px;
@@ -90,8 +115,7 @@ const ImgText = styled.div`
   left: 0;
 `;
 const Name = styled.p`
-  font-size: 19px;
-  margin-bottom: 5px;
+  font-size: 2rem;
   position: absolute;
   bottom: 37px;
   left: 14px;
@@ -103,6 +127,9 @@ const Rating = styled.div`
 
 `;
 const CardText = styled.div`
+  white-space: pre-wrap; 
+  word-wrap: break-word;
+  line-height: 120%;
   margin: 12px 7px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -111,7 +138,6 @@ const CardText = styled.div`
   -webkit-box-orient: vertical;
 `;
 const Text = styled.p`
-  font-size: 15px;
 `;
 const CardFooter = styled.div`
   padding: 0 7px;
@@ -134,7 +160,7 @@ const CreateBtn = styled.button`
   bottom : 40px;
   left: 50%;
   transform: translate(-50%, 0);
-  background: #5D5C5B;
+  background: #657DD2;
   border-radius: 50%;
   box-shadow: 0 2px 7px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease;
@@ -177,12 +203,12 @@ export default function Home() {
 
   const handleDelete = async (id, e) => {
     e.stopPropagation(); // 이벤트 전파 방지(모달 열림 막기)
-    const confirmed = window.confirm("정말 삭제하시겠습니까?");
+    const confirmed = window.confirm("정말 삭제하시나요?");
     if (confirmed) {
       try {
         await deleteDoc(doc(db, 'cafes', id));
         setCafes(prevCafes => prevCafes.filter(cafe => cafe.id !== id));
-        alert('삭제가 완료되었습니다.');
+        alert('삭제되었어요✔');
         setSelectedCafe(null);
       } catch (e) {
         console.error('삭제 중 오류 발생: ', e);
@@ -190,12 +216,28 @@ export default function Home() {
     }
   };
 
+  const [isShrunk, setIsShrunk] = useState(false); // 헤더 조정
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 52) {
+        setIsShrunk(true);
+      } else {
+        setIsShrunk(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <Main>
       <GlobalStyle />
       <Container>
-        <Header>
-          <Title>컵일기</Title>
+        <Header shrunk={isShrunk}>
+          <Title shrunk={isShrunk}>컵일기.</Title>
         </Header>
         <CardWrap>
           {cafes.map((cafe, index) => (
@@ -205,8 +247,8 @@ export default function Home() {
                 <ImgText>
                   <Name>{cafe.cafeName}</Name>
                   <Rating>
-                    {[...Array(cafe.rating)].map((_, i) => (
-                      <IconHeart key={i} />
+                    {[...Array(5)].map((_, i) => (
+                      <IconHeart key={i} filled={i < cafe.rating ? 1 : 0} />
                     ))}
                   </Rating>
                 </ImgText>
@@ -215,7 +257,7 @@ export default function Home() {
                 <Text>{cafe.text}</Text>
               </CardText>
               <CardFooter>
-                <DateArea>{new Date(cafe.date).toLocaleDateString()}</DateArea>
+                <DateArea>{new Date(cafe.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</DateArea>
               </CardFooter>
             </Card>
           ))}
