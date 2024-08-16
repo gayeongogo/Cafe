@@ -42,6 +42,7 @@ const Main = styled.div`
   color: #212121;
 `;
 const Container = styled.div`
+  position: relative;
   max-width: 450px;
   width: 100%;
   min-height: 100vh;
@@ -80,7 +81,7 @@ const Title = styled.p`
 `;
 const CardWrap = styled.div`
   animation: ${fadeIn} 1s ease-out;
-  padding: 70px 20px 0 20px;
+  padding: 70px 20px 30px 20px;
 `;
 const Card = styled.div`
   padding: 12px;
@@ -138,6 +139,11 @@ const CardText = styled.div`
   -webkit-box-orient: vertical;
 `;
 const Text = styled.p`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 `;
 const CardFooter = styled.div`
   padding: 0 7px;
@@ -171,6 +177,10 @@ const CreateBtn = styled.button`
   }
 `;
 const Footer = styled.div`
+  width: 450px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
   font-size: 12px;
   color: #dedede;
   text-align: right;
@@ -239,7 +249,8 @@ export default function Home() {
         <Header shrunk={isShrunk}>
           <Title shrunk={isShrunk}>컵일기.</Title>
         </Header>
-        <CardWrap>
+        {cafes.length > 0 ? (
+          <CardWrap>
           {cafes.map((cafe, index) => (
             <Card onClick={() => handleCardClick(cafe)} key={index}>
               <CardMain>
@@ -253,15 +264,16 @@ export default function Home() {
                   </Rating>
                 </ImgText>
               </CardMain>
-              <CardText>
-                <Text>{cafe.text}</Text>
-              </CardText>
+              <CardText>{cafe.text}</CardText>
               <CardFooter>
                 <DateArea>{new Date(cafe.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</DateArea>
               </CardFooter>
             </Card>
           ))}
-        </CardWrap>
+          </CardWrap>
+        ) : (
+          <Text>아직 기록이 없어요. <br/>다녀온 카페를 추가해 볼까요?</Text>
+        )}
         <Link to='/recode'><CreateBtn><IconPlus/></CreateBtn></Link>
         <Footer>@gayeongogo</Footer>
       </Container>
