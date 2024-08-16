@@ -11,6 +11,7 @@ import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import DatePicker from 'react-datepicker';
+import DaumPostcode from 'react-daum-postcode';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const fadeIn = keyframes`
@@ -57,7 +58,7 @@ const Main = styled.div`
   background-color: #f0f0f0;
 `;
 const Container = styled.div`
-  max-width: 500px;
+  max-width: 450px;
   width: 100%;
   height: 100%;
   background-color: #fff;
@@ -66,7 +67,7 @@ const Container = styled.div`
 `;
 const Header = styled.div`
   animation: ${fadeIn} 0.5s ease-in-out;
-  max-width: 500px;
+  max-width: 450px;
   width: 100%;
   height: 52px;
   display: flex;
@@ -173,7 +174,10 @@ const FileInput = styled.input`
 `;
 const DateButton = styled.button`
 `
-
+const Contents = styled.div`
+  border-top: 1px solid #E6E6E6;
+  border-bottom: 1px solid #E6E6E6;
+`
 
 export default function Recode() {
   const navigate = useNavigate()
@@ -192,6 +196,7 @@ export default function Recode() {
 
   const [imageFile, setImageFile] = useState(null);
   const storage = getStorage();
+  const [showPostcode, setShowPostcode] = useState(false); // 주소검색
   const [isFormValid, setIsFormValid] = useState(false); // 양식 검사
 
   useEffect(() => {
@@ -218,6 +223,11 @@ export default function Recode() {
 
   const handleDateChange = (date) => {
     setFormData({ ...formData, date: date.toISOString() });
+  };
+
+  const handleAddress = (data) => {
+    setFormData({ ...formData, location: data.address });
+    setShowPostcode(false);
   };
 
   const handleSubmit = async () => {
@@ -296,9 +306,16 @@ export default function Recode() {
             </ListItem>
             <ListItem>
               <Label htmlFor="location">위치 추가</Label>
-              <Input type="text" placeholder='위치 찾기...' name="location" onChange={handleChange}/>
-              <IconRight/>
+              <Input type="text" placeholder='직접 입력' name="location" onChange={handleChange} value={formData.location}/>
+              <button onClick={() => setShowPostcode(true)}>주소검색<IconRight /></button>
             </ListItem>
+            {showPostcode && (
+              <Contents>
+                <DaumPostcode
+                  onComplete={handleAddress}
+                />
+              </Contents>
+            )}
             <ListItem>
               <Label htmlFor="taste">맛</Label>
               <Input type="text" placeholder='커피와 디저트의 맛은 어땠나요?' name="taste" onChange={handleChange}/>
