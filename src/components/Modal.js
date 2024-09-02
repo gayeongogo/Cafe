@@ -56,7 +56,7 @@ const Overlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1000;
+  z-index: 2000;
   background-color: rgba(0,0,0,0.5);
   backdrop-filter: blur(2px);
 `
@@ -73,7 +73,7 @@ const Contents = styled.div`
   background-color: #ffffff;
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-  z-index: 1001;
+  z-index: 2001;
   overflow-y: scroll;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
@@ -91,7 +91,7 @@ const ModalBg = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 2000;
+  z-index: 2002;
   background-color: rgba(0,0,0,0.5);
 `
 const ModalContents = styled.div`
@@ -105,7 +105,7 @@ const ModalContents = styled.div`
   background-color: #ffffff;
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-  z-index: 2001;
+  z-index: 2003;
 `
 const ModalHeader = styled.div`
   display: flex;
@@ -115,7 +115,7 @@ const ModalHeader = styled.div`
   position: sticky;
   top: 0;
   padding: 7px 0;
-  z-index: 3000;
+  z-index: 2004;
 `
 const ModalDate = styled.div`
   margin: 0 auto;

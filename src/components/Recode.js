@@ -7,7 +7,7 @@ import { FaChevronRight } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
 import { MdCalendarMonth } from "react-icons/md";
 import { BsFileEarmarkPlusFill } from "react-icons/bs"
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import DatePicker from 'react-datepicker';
@@ -241,13 +241,28 @@ export default function Recode() {
         imageUrl = await getDownloadURL(storageRef);
       }
       const dateISO = new Date(formData.date).toISOString();
-      await addDoc(collection(db, 'cafes'), {
-        ...formData,
-        imageUrl,
-        date: dateISO,
-      });
-      alert('저장되었어요✔');
-      navigate('/');
+      if(auth.currentUser){
+        await addDoc(collection(db, 'cafes'), {
+          ...formData,
+          imageUrl,
+          date: dateISO,
+          userId: auth.currentUser.uid, // 사용자 ID 추가
+        });
+        alert('저장되었어요✔');
+        navigate('/');
+      } else {
+        const localLists = JSON.parse(localStorage.getItem('cafes')) || [];
+        const newList = {
+          ...formData,
+          imageUrl,
+          date: dateISO,
+          id: Date.now(), // 로컬 저장소에 저장할 때는 고유 ID를 추가
+        };
+        localStorage.setItem('cafes', JSON.stringify([...localLists, newList]));
+        alert('저장되었습니다 (로컬) ✔');
+        navigate('/');
+      }
+      
     } catch (e) {
       console.error('문서 추가 중 오류 발생: ', e);
     }

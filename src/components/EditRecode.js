@@ -7,7 +7,7 @@ import { FaChevronRight } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
 import { MdCalendarMonth } from "react-icons/md";
 import { BsFileEarmarkPlusFill } from "react-icons/bs"
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import DatePicker from 'react-datepicker';
@@ -203,14 +203,28 @@ export default function EditRecode() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const docRef = doc(db, 'cafes', id);
-      const docSnap = await getDoc(docRef);
+      try{
+        if (auth.currentUser) {
+          const docRef = doc(db, 'cafes', id);
+          const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        setFormData(docSnap.data());
-      } else {
-        console.log("No such document!");
+          if (docSnap.exists()) {
+            setFormData(docSnap.data());
+          } else {
+            console.log("No such document!");
+          }
+        } else {
+          // 로그인되지 않은 경우 로컬 저장소에서 데이터 가져오기
+          const localLists = JSON.parse(localStorage.getItem('cafes')) || [];
+          const cafe = localLists.find(cafe => cafe.id === parseInt(id));
+          if (cafe) {
+            setFormData(cafe);
+          }
+        }
+      } catch (e) {
+        console.error('데이터 불러오기 중 오류 발생: ', e);
       }
+      
     };
 
     fetchData();
@@ -258,13 +272,24 @@ export default function EditRecode() {
         imageUrl = await getDownloadURL(storageRef);
       }
       const dateISO = new Date(formData.date).toISOString();
-      await updateDoc(doc(db, 'cafes', id), {
-        ...formData,
-        imageUrl,
-        date: dateISO,
-      });
-      alert('수정되었어요✔');
-      navigate('/');
+      if (auth.currentUser) {
+        await updateDoc(doc(db, 'cafes', id), {
+          ...formData,
+          imageUrl,
+          date: dateISO,
+        });
+        alert('수정되었어요✔');
+        navigate('/');
+      } else {
+        // 로그인하지 않은 사용자의 경우 로컬 저장소에서 업데이트
+        const localLists = JSON.parse(localStorage.getItem('cafes')) || [];
+        const updatedLists = localLists.map(cafe =>
+          cafe.id === parseInt(id) ? { ...formData, imageUrl, date: dateISO } : cafe
+        );
+        localStorage.setItem('cafes', JSON.stringify(updatedLists));
+        alert('수정되었습니다 (로컬) ✔');
+        navigate('/');
+      }
     } catch (e) {
       console.error('문서 업데이트 중 오류 발생: ', e);
     }

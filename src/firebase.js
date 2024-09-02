@@ -1,6 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_apiKey,
@@ -12,6 +13,7 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_measurementId,
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-export {db}
+const app = initializeApp(firebaseConfig); // firebase 앱 초기화
+const db = getFirestore(app); // db 연결
+export const auth = getAuth(app); // 인증 연결
+export {db} // firebase 객체 내보내기
