@@ -1,70 +1,22 @@
-# Getting Started with Create React App
+# 개인 프로젝트 '컵일기'
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### 📑Description
+카페 탐방 취미를 더욱 즐겁고 의미 있게 만들어 줄 수 있는 사이트를 구상했습니다. 보통의 리뷰는 객관적인 평가에 치중되지만, 일기와 함께 기록하면 그날의 감정과 분위기를 담아 더 특별한 의미를 만들 수 있습니다.
 
-## Available Scripts
+### 💡Feature
+* 다녀온 카페의 이름, 위치, 카페의 분위기, 메뉴, 서비스 등의 정보 입력
+* 구체적인 리뷰를 작성하고 총점을 별점으로 평가
+* 카페 내부, 메뉴, 방문한 날의 분위기 등을 기록하기 위한 사진 업로드 기능
+* 날짜별 일기 작성 및 글 등록, 수정, 삭제 기능
+* 체험 사용자는 브라우저에서 데이터를 유지할 수 있고, 이후 로그인 시 데이터를 서버로 전송 가능
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### 🙋‍♀️Contribution
+* <B>Figma</B>를 사용하여 전반적인 디자인 및 스토리보드 구성
+* <B>Firebase</B>를 사용하여 서버 CRUD 기능을 신속하게 구현
+* 회원가입 시 <B>Firebase 인증 기능</B>을 활용해 <B>switch case문</B>으로 다향한 오류 사항의 유효성을 검사하여 처리
+* 모든 필드 입력 후 글 등록 및 업데이트가 가능하도록 <B>useEffect</B>로 양식 검사 후 완료 버튼 활성화
+* 로그인 이전에는 데이터를 <B>local storage</B>에 저장하고, 로그인 후에는 <B>Firebase</B>를 통해 서버에 업로드하여 관리
+* 사용자가 선택한 이미지를 미리보기 형태로 보여주기 위해 <B>FileReader API</B>를 사용해 데이터 URL로 변환 후 화면에 렌더링
+* <B>Datepicker</B>를 사용해 사용자가 날짜를 선택할 수 있도록 구현하고, 선택한 날짜는 ISO 형식으로 변환해 저장
+* <B>postcode API</B>를 사용해 우편번호를 검색하여 주소 입력을 보다 간편하게 이용할 수 있도록 구현
+* 하트 모양의 아이콘을 클릭해 사용자가 카페에 대한 평점을 입력할 수 있는 <B>인터렉티브 UI</B> 구현
