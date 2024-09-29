@@ -295,8 +295,9 @@ export default function Home() {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
-      /* navigate('/'); */
+      if(window.confirm("정말 로그아웃 하시나요?")) {
+        await signOut(auth);
+      }
     } catch (e) {
       console.error('로그아웃 중 오류 발생: ', e);
     }
