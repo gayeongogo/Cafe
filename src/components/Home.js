@@ -69,16 +69,16 @@ const Container = styled.div`
   box-sizing: border-box;
 `;
 const Header = styled.div`
-  margin-top: ${(props) => (props.shrunk ? "0px" : "25px")};
+  margin-top: ${(props) => (props.$shrunk ? "0px" : "25px")};
   max-width: 450px;
   width: 100%;
-  height: ${(props) => (props.shrunk ? "30px" : "52px")};
-  background-image: ${(props) => (props.shrunk ? "none" : "url('/images/title-color.png')")};
+  height: ${(props) => (props.$shrunk ? "30px" : "52px")};
+  background-image: ${(props) => (props.$shrunk ? "none" : "url('/images/title-color.png')")};
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center 7px;
-  background-color: ${(props) => (props.shrunk ? "rgba(255,255,255,0.7)" : "none")};
-  backdrop-filter: ${(props) => (props.shrunk ? "blur(10px)" : "none")};
+  background-color: ${(props) => (props.$shrunk ? "rgba(255,255,255,0.7)" : "none")};
+  backdrop-filter: ${(props) => (props.$shrunk ? "blur(10px)" : "none")};
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -89,7 +89,7 @@ const Header = styled.div`
   transition: height 0.5s ease;
 `;
 const Title = styled.p`
-  font-size: ${(props) => (props.shrunk ? "1.2rem" : "2rem")};
+  font-size: ${(props) => (props.$shrunk ? "1.2rem" : "2rem")};
   font-weight: 600;
   color: #323031;
   transition: height 0.5s ease;
@@ -100,7 +100,7 @@ const Auth = styled.div`
   height: 25px;
   border-bottom: 1px solid #ededed;
   background-color: #ffffff;
-  display: ${(props) => (props.shrunk ? "none" : "flex")};
+  display: ${(props) => (props.$shrunk ? "none" : "flex")};
   align-items: center;
   justify-content: center;
   position: fixed;
@@ -329,13 +329,13 @@ export default function Home() {
             <LogoutBtn onClick={handleLogout}><IconLogout/></LogoutBtn>
           </Auth>
         ) : (
-          <Auth shrunk={isShrunk}>
+          <Auth $shrunk={isShrunk}>
             <p>로그인하고 안전하게 이용하세요.</p>
             <Link to="/login" style={{all: 'unset'}}><SignInBtn>로그인<IconLogin /></SignInBtn></Link>
           </Auth>
         )}
-        <Header shrunk={isShrunk}>
-          <Title shrunk={isShrunk}>컵일기.</Title>
+        <Header $shrunk={isShrunk}>
+          <Title $shrunk={isShrunk}>컵일기.</Title>
         </Header>
         {cafes.length > 0 ? (
           <CardWrap>
