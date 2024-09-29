@@ -109,7 +109,6 @@ const Auth = styled.div`
 const SignInBtn = styled.button`
   font-size: 15px;
   text-align: center;
-  margin-left: 10px;
   text-decoration: underline;
 `
 const LogoutBtn = styled.button`
@@ -330,8 +329,7 @@ export default function Home() {
           </Auth>
         ) : (
           <Auth $shrunk={isShrunk}>
-            <p>로그인하고 안전하게 이용하세요.</p>
-            <Link to="/login" style={{all: 'unset'}}><SignInBtn>로그인<IconLogin /></SignInBtn></Link>
+            <p>현재 데이터는 브라우저에만 저장됩니다. <Link to="/login" style={{all: 'unset'}}><SignInBtn>로그인<IconLogin /></SignInBtn></Link>하고 안전하게 이용하세요.</p>
           </Auth>
         )}
         <Header $shrunk={isShrunk}>
