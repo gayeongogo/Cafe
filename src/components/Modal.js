@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { IoHeart } from "react-icons/io5";
 import { MdLocationOn } from "react-icons/md";
-import { RxDotsHorizontal } from "react-icons/rx";
+import { RxDotsHorizontal, RxChevronLeft } from "react-icons/rx";
 
 const modalIn = keyframes`
   from {
@@ -15,7 +15,6 @@ const modalIn = keyframes`
     transform: translate(-50%, -50%) scale(1); // 원래 크기로
   }
 `;
-
 
 const ModalIconHeart = styled(IoHeart)`
   font-size: 17px;
@@ -29,7 +28,11 @@ const IconMap = styled(MdLocationOn)`
 const IconMore = styled(RxDotsHorizontal)`
   color: #7A7A7A;
   font-size: 24px;
-  margin: 0 4px;
+  vertical-align: middle;
+`;
+const IconBack = styled(RxChevronLeft)`
+  color: #7A7A7A;
+  font-size: 24px;
   vertical-align: middle;
 `;
 const Button = styled.button`
@@ -109,21 +112,14 @@ const ModalContents = styled.div`
 `
 const ModalHeader = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   background-color: #ffffff;
   position: sticky;
   top: 0;
-  padding: 7px 0;
+  padding: 7px;
   z-index: 2004;
 `
-const ModalDate = styled.div`
-  margin: 0 auto;
-`
-const MoreBtn = styled.button`
-  position: absolute;
-  right: 5px;
-`;
 const ModalImg = styled.img`
   width: 100%;
   aspect-ratio: 4 / 5;
@@ -161,8 +157,9 @@ const Modal = ({ cafe, onClose, onDelete }) => {
       <Overlay onClick={onClose}>
         <Contents onClick={e => e.stopPropagation()}>
           <ModalHeader>
-            <ModalDate>{new Date(cafe.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</ModalDate>
-            <MoreBtn onClick={() => setModalOpen(true)}><IconMore/></MoreBtn>
+            <button onClick={onClose}><IconBack/></button>
+            <div>{new Date(cafe.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+            <button onClick={() => setModalOpen(true)}><IconMore/></button>
           </ModalHeader>
           {cafe.imageUrl && <ModalImg src={cafe.imageUrl} alt="Cafe image" />}
           <ModalMain>
